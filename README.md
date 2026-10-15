@@ -70,13 +70,6 @@ Key properties:
 
 ## Quick start
 
-### Windows — single-file exe (no Python needed)
-
-Grab `CrystalStacker.exe` from the repository root, copy it anywhere, and
-double-click it. It bundles Python, Flask, NumPy and SciPy, so the target
-machine needs nothing installed. The browser opens automatically and generated
-structures appear in an `outputs/` folder next to the exe.
-
 ### Windows — from source (one-click)
 
 Double-click `run_webapp.bat` inside `crystalstacker/`. It detects a suitable
@@ -105,24 +98,6 @@ is taken).
    *Stacking results table* to expand it.
 4. **Download** the generated CIF files, individually or bundled as a ZIP
    (`Download all (ZIP)`, at the foot of the page).
-
-## Building the exe yourself
-
-```bat
-cd crystalstacker
-build_exe.bat
-```
-
-Requires Python 3.10+ on the build machine only; the produced
-`dist/CrystalStacker.exe` runs anywhere. The script creates a throwaway
-`build_env/` virtual environment with the pinned versions in
-`requirements-build.txt`, so unrelated packages installed alongside the project
-cannot end up inside the exe. Use `build_exe.bat --clean` to keep the build
-intermediates for a faster rebuild.
-
-First launch takes 10–20 seconds: a one-file exe unpacks itself to a temporary
-directory before starting. Some antivirus products flag PyInstaller output and
-need an exclusion.
 
 ## Examples
 
@@ -158,7 +133,6 @@ validation, and the boundary cases where the tool warns or refuses.
 
 ```
 CrystalStacker/
-├── CrystalStacker.exe       prebuilt single-file executable (no Python needed)
 ├── crystalstacker/          source tree
 │   ├── app.py                 Flask application (UI, upload, run management)
 │   ├── layer_stacking.py      core stacking engine
@@ -187,7 +161,6 @@ CrystalStacker/
 
 - Python ≥ 3.10
 - numpy, scipy, Flask (see `requirements.txt`)
-- *Running* `CrystalStacker.exe` needs neither Python nor these packages.
 
 ## Tests
 
