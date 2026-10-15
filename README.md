@@ -1,6 +1,6 @@
-# CrystalStack
+# CrystalStacker
 
-**CrystalStack** builds the five classical interlayer stacking arrangements of a
+**CrystalStacker** builds the five classical interlayer stacking arrangements of a
 2D covalent organic framework (COF) from a single-layer CIF, through a small
 Flask web application. Upload one or more monolayers, pick the stacking modes,
 and download ready-to-view CIF files of the resulting bilayers.
@@ -34,12 +34,28 @@ Key properties:
 - **Monolayer extraction.** A multilayer input can additionally be exported
   as its first sheet alone (`monolayer.cif`), with the *c* axis reset to a
   single layer, ready to be stacked again.
+- **Any stacking direction.** A CIF that writes the layer normal along **a**
+  or **b** instead of **c** is recognised from its bond topology and
+  relabelled before anything else happens — the sheets and every Cartesian
+  position are untouched, only the axis names change. The stacking direction
+  is a property of how a file was written down, not of the material, so the
+  relabelling (which is reported, never silent) replaces what used to be a
+  rejection. Structures with no single stacking direction — 3D frameworks,
+  1D chains, molecular crystals — keep being declined, with a message naming
+  what is actually wrong.
 - **Symmetry transparency.** Symmetry operations listed in a CIF are expanded
   automatically and the expansion is reported (`42 sites x 8 operations ->
   336 atoms`). A file that *declares* a space group but lists no operations
   is rejected with an explanation instead of being silently read as its
   asymmetric unit; 1D chains and molecular (non-layered) inputs are rejected
   with a clear message as well.
+- **Axis conventions are normalised, not guessed at.** A CIF whose layers
+  stack along a or b instead of c is relabelled by a cyclic permutation that
+  preserves the cell's handedness and every atom's Cartesian coordinate, and
+  the relabelling is reported. Conversely, an input whose atoms are covalently
+  bonded across the c boundary (a 3D framework, not a van der Waals stack) is
+  flagged with the number of crossing bonds instead of being processed
+  silently as a monolayer.
 - **Rotated mode is validated, never silent.** Before a rotation / mirror
   stacking is built, the operation is checked against the layer (a PBC
   residual test) and applied about the nearest symmetry axis — the axes of a
@@ -56,14 +72,14 @@ Key properties:
 
 ### Windows — single-file exe (no Python needed)
 
-Grab `CrystalStack.exe` from the repository root, copy it anywhere, and
+Grab `CrystalStacker.exe` from the repository root, copy it anywhere, and
 double-click it. It bundles Python, Flask, NumPy and SciPy, so the target
 machine needs nothing installed. The browser opens automatically and generated
 structures appear in an `outputs/` folder next to the exe.
 
 ### Windows — from source (one-click)
 
-Double-click `run_webapp.bat` inside `crystalstack/`. It detects a suitable
+Double-click `run_webapp.bat` inside `crystalstacker/`. It detects a suitable
 Python (3.10+), creates a local `.venv`, installs the dependencies and starts
 the server; the browser opens automatically.
 
@@ -93,12 +109,12 @@ is taken).
 ## Building the exe yourself
 
 ```bat
-cd crystalstack
+cd crystalstacker
 build_exe.bat
 ```
 
 Requires Python 3.10+ on the build machine only; the produced
-`dist/CrystalStack.exe` runs anywhere. The script creates a throwaway
+`dist/CrystalStacker.exe` runs anywhere. The script creates a throwaway
 `build_env/` virtual environment with the pinned versions in
 `requirements-build.txt`, so unrelated packages installed alongside the project
 cannot end up inside the exe. Use `build_exe.bat --clean` to keep the build
@@ -128,19 +144,32 @@ need an exclusion.
 CTF-1 and Pc-PBBA, plus the rotated reference). These are the structures the
 regression tests compare against.
 
+## Documentation
+
+[`docs/MANUAL.md`](docs/MANUAL.md) is the user manual: installation, the input
+the tool expects (including multilayer, symmetry and stacking-axis cases), every
+parameter, what the output contains, how sheets are detected, and a
+symptom → cause → action troubleshooting table.
+[`docs/cases/`](docs/cases/) holds four worked examples — the five stacking
+modes from one monolayer, multilayer inputs, the rotated mode and its
+validation, and the boundary cases where the tool warns or refuses.
+
 ## Repository layout
 
 ```
-CrystalStack/
-├── CrystalStack.exe       prebuilt single-file executable (no Python needed)
-├── crystalstack/          source tree
+CrystalStacker/
+├── CrystalStacker.exe       prebuilt single-file executable (no Python needed)
+├── crystalstacker/          source tree
 │   ├── app.py                 Flask application (UI, upload, run management)
 │   ├── layer_stacking.py      core stacking engine
 │   ├── stacking_rules.py      automatic offset selection and provenance
 │   ├── cif_io.py              CIF reader/writer (P1, symmetry expansion)
+│   ├── stacking_axis.py       stacking-direction detection, axis relabelling,
+│   │                           3D-framework detection (c-crossing bonds)
 │   ├── benchmark_scaling.py   timing benchmark
-│   ├── test_layer_stacking.py regression suite (135 checks)
+│   ├── test_layer_stacking.py regression suite (161 checks)
 │   ├── smoke_test_web.py      end-to-end web smoke test
+│   ├── docs/                  user manual and worked case studies
 │   ├── build_exe.py           PyInstaller build driver
 │   ├── build_exe.bat          one-click exe build
 │   ├── run_webapp.bat         Windows one-click launcher (from source)
@@ -149,7 +178,7 @@ CrystalStack/
 │   ├── templates/  static/    web interface
 │   ├── reference/             DFT reference structures (CIF)
 │   └── examples/              sample monolayer inputs (CIF)
-├── crystalstack.zip      source archive of the folder above
+├── crystalstacker.zip      source archive of the folder above
 ├── README.md  README.docx
 └── LICENSE
 ```
@@ -158,13 +187,13 @@ CrystalStack/
 
 - Python ≥ 3.10
 - numpy, scipy, Flask (see `requirements.txt`)
-- *Running* `CrystalStack.exe` needs neither Python nor these packages.
+- *Running* `CrystalStacker.exe` needs neither Python nor these packages.
 
 ## Tests
 
 ```bash
-cd crystalstack
-python test_layer_stacking.py    # 135 checks, engine + rules + CIF I/O
+cd crystalstacker
+python test_layer_stacking.py    # 161 checks, engine + rules + CIF I/O
 python smoke_test_web.py         # end-to-end test against the Flask test client
 ```
 
