@@ -177,10 +177,3 @@ python smoke_test_web.py         # end-to-end test against the Flask test client
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
-## Citation
-
-Ma, B.; Yan, Q.; Zhou, W.; Wu, J.; Bao, L.; Lu, X.; Qiu, J.; Zhu, Y.; Wang, X.; Zhai, D.; Liu, C.; Zhang, S.; Deng, W.; Lu, X. Data-Driven Synthesis of Covalent Organic Frameworks via Machine Learning with Integrated Success–Failure Data. JACS Au 2026, 6 (7), 3939–3951. https://doi.org/10.1021/jacsau.6c00493
-
-This release (v2.0.0) is archived on Zenodo:
-https://doi.org/10.5281/zenodo.23385736
