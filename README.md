@@ -5,7 +5,7 @@
 Flask web application. Upload one or more monolayers, pick the stacking modes,
 and download ready-to-view CIF files of the resulting bilayers.
 
-**Version 2.0.0.** This software was previously published as *CrystalStack*; it
+**Version 2.1.0.** This software was previously published as *CrystalStack*; it
 has been renamed *CrystalStacker* to reflect its scope more accurately and to
 avoid confusion with a similarly named package.
 
@@ -44,9 +44,10 @@ Key properties:
   position are untouched, only the axis names change. The stacking direction
   is a property of how a file was written down, not of the material, so the
   relabelling (which is reported, never silent) replaces what used to be a
-  rejection. Structures with no single stacking direction — 3D frameworks,
-  1D chains, molecular crystals — keep being declined, with a message naming
-  what is actually wrong.
+  rejection. Structures with no single stacking direction — 1D chains and
+  molecular crystals — keep being declined, with a message naming what is
+  actually wrong; a 3D framework is flagged with its crossing-bond count and
+  processed (see the third bullet).
 - **Symmetry transparency.** Symmetry operations listed in a CIF are expanded
   automatically and the expansion is reported (`42 sites x 8 operations ->
   336 atoms`). A file that *declares* a space group but lists no operations
@@ -145,7 +146,7 @@ CrystalStacker/
 │   ├── stacking_axis.py       stacking-direction detection, axis relabelling,
 │   │                           3D-framework detection (c-crossing bonds)
 │   ├── benchmark_scaling.py   timing benchmark
-│   ├── test_layer_stacking.py regression suite (161 checks)
+│   ├── test_layer_stacking.py regression suite (217 checks)
 │   ├── smoke_test_web.py      end-to-end web smoke test
 │   ├── docs/                  user manual and worked case studies
 │   ├── build_exe.py           PyInstaller build driver
@@ -170,7 +171,16 @@ CrystalStacker/
 
 ```bash
 cd crystalstacker
-python test_layer_stacking.py    # 161 checks, engine + rules + CIF I/O
+python test_layer_stacking.py    # 217 checks, engine + rules + CIF I/O
+```
+
+The suite includes the geometry-preservation guarantees added in this
+revision: every stacking mode places the input sheet rigidly, and the
+intralayer geometry is verified by three-dimensional periodic distance
+analysis (intra-sheet atomic positions reproduced to better than 1e-6 A,
+sheet thickness unchanged).  Worked examples for running a periodic
+geometry optimisation of a generated structure with xTB or DFTB+ ship in
+`examples/optimisation/`.
 python smoke_test_web.py         # end-to-end test against the Flask test client
 ```
 
